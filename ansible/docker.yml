@@ -1,0 +1,23 @@
+- name: Provisioning for Docker
+  hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+    - name: Check if docker is installed
+      stat: path=/usr/bin/docker
+      register: look_for_docker
+    - name: Install docker if it's not already present
+      include: tasks/docker.yml
+      when: look_for_docker.stat.exists == False
+    - name: Install pip
+      apt:
+        name: python-pip
+        state: installed
+    - name: Install docker-compose with pip
+      pip:
+        name: docker-compose==1.15.0
+    - name: Add deploy user to docker group
+      user:
+        name: "{{deploy_user}}"
+        groups: docker
+        append: yes

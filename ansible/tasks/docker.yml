@@ -1,0 +1,29 @@
+- name: Install System Packages (docker prereqs)
+  apt:
+    name: "{{item}}"
+    state: present
+  with_items:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - software-properties-common
+
+# This next step doesn't use `apt_key` module because of this bug:
+# https://github.com/ansible/ansible/issues/9966#issuecomment-246373269
+# The SSL issues would disappear and this would JustWork™ in newer versions
+# of ubuntu, so you may not need this approach for all AMIs.
+- name: Add docker repo keys
+  shell: "curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -"
+  args:
+    creates: /etc/apt/sources.list.d/download_docker_com_linux_ubuntu.list
+
+- name: Add stable channel for docker
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu trusty stable
+    state: present
+
+- name: Install docker
+  apt:
+    name: "docker-ce"
+    state: installed
+    update_cache: yes

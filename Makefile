@@ -18,51 +18,60 @@ assert-%:
 	    exit 1; \
 	fi
 
+# A target to ensure fail-fast if ansible is not present
 require-ansible:
 	ansible --version &> /dev/null
 
+# A target to ensure fail-fast if terraform is not present
 require-tf:
 	terraform --version &> /dev/null
 
+# A target to ensure fail-fast if jq is not present
 require-jq:
 	jq --version &> /dev/null
 
+# A target toe ensure fail-fast if keypair is not created
+require-keypair:
+	@ if [ -z "$$TF_VAR_pub_key" ]; then \
+			echo "Pub key is empty; run 'make keypair' first!"; \
+			exit 1; \
+		fi;
+
+# Helper for generating the keypair our instance will use
 keypair:
 	ssh-keygen -N '' -f airflow-key
 
+# Various proxies for invoking common `terraform` subcommands with our
+# specific environment.  The most important aspect of this is guaranteeing
+# a consistent value for TF_VAR_aws_profile.
 plan: assert-TF_VAR_aws_profile require-tf require-keypair
 	terraform plan
-
-require-keypair:
-	@ if [ -z "$TF_VAR_pub_key" ]; then \
-		echo "\$TF_VAR_pub_key is empty; run 'make keypair' first!"; \
-		exit 1; \
-	fi
-
-apply: assert-TF_VAR_aws_profile require-tf require-keypair
+apply: require-keypair assert-TF_VAR_aws_profile require-tf
 	terraform apply
+refresh: require-tf assert-TF_VAR_aws_profile
+	terraform refresh
 
-ssh:
-	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no \
-	 -i ./ec2-key -l ubuntu \
-	 `terraform output -json|jq -r ".ip.value"`
-
+# Aliases, prerequisites and proxies for invoking `terraform destroy`
+# with the right environment.  This will show the plan and still ask
+# for confirmation.
+clean: destroy
 plan-destroy:
 	terraform plan -destroy
-
-destroy:
+destroy: plan-destroy
 	terraform destroy
 
-clean: destroy
+# Helper for devs to SSH into the instance we're creating.
+# This is only for inspection/debugging, it's not used directly
+# in provisioning.
+ssh:
+	ssh -o UserKnownHostsFile=/dev/null \
+		-o StrictHostKeyChecking=no \
+	 	-i ./airflow-key -l ubuntu \
+	 	`terraform output -json|jq -r ".ip.value"`
 
-provision-%: require-jq require-tf
+# Helper for invoking ansible against the host created by terraform
+provision-%: require-jq require-tf require-ansible
 	ansible-playbook \
 	 -e @ansible/vars.yml \
 	 -i `terraform output -json|jq -r ".ip.value"`, \
 	 ansible/$*.yml
-
-reprovision: require-jq
-	ansible-playbook \
-	 -e @ansible/vars.yml \
-	 -i `terraform output -json|jq -r ".ip.value"`, \
-	 ansible/airflow.yml

@@ -39,12 +39,15 @@ resource "aws_security_group_rule" "ssh" {
   security_group_id = "${aws_security_group.airflow.id}"
 }
 
-
 resource "aws_security_group" "airflow" {
   name = "airflow-sg${var.deployment_suffix}"
   description = "airflow${var.deployment_suffix} security groups"
 }
 
+resource "aws_eip" "airflow" {
+  instance = "${aws_instance.airflow.id}"
+}
+
 output "ip" {
-  value = "${aws_instance.airflow.ip}"
+   value = "${aws_eip.airflow.public_ip}"
 }

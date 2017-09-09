@@ -5,3 +5,4 @@
 # Module directory
 .terraform/
 airflow-key*
+*.retry
