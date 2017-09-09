@@ -1,5 +1,5 @@
 TF_VAR_aws_profile := 605-test
-TF_VAR_pub_key := $(shell cat ./ec2-key.pub)
+TF_VAR_pub_key := $(shell cat ./airflow-key.pub)
 TF_VAR_aws_region := us-east-1
 TF_VAR_aws_az := us-east-1d
 TF_VAR_ami := ami-845367ff
@@ -28,16 +28,18 @@ require-jq:
 	jq --version &> /dev/null
 
 keypair:
-	ssh-keygen -N '' -f ec2-key
+	ssh-keygen -N '' -f airflow-key
 
-plan: assert-TF_VAR_aws_profile require-tf
+plan: assert-TF_VAR_aws_profile require-tf require-keypair
 	terraform plan
 
-apply: assert-TF_VAR_aws_profile require-tf
+require-keypair:
 	@ if [ -z "$TF_VAR_pub_key" ]; then \
 		echo "\$TF_VAR_pub_key is empty; run 'make keypair' first!"; \
 		exit 1; \
 	fi
+
+apply: assert-TF_VAR_aws_profile require-tf require-keypair
 	terraform apply
 
 ssh:
