@@ -1,0 +1,18 @@
+- name: Enable supervisor
+  service:
+    name: supervisor
+    enabled: yes
+
+- name: Start supervisor
+  service:
+    name: supervisor
+    state: started
+
+- name: Reread for supervisor
+  shell: supervisorctl reread
+
+- name: Reload for supervisor
+  shell: supervisorctl reload
+
+- name: Restart (all) for supervisor
+  shell: sleep 2 && supervisorctl restart all
