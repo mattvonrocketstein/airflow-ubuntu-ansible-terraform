@@ -1,0 +1,7 @@
+#
+# Simple composite playbook, mainly to specify the order of the
+# other playbooks and provide an extra opportunity to override
+# variables.  See the included files for more details
+#
+- include: docker.yml
+- include: airflow.yml

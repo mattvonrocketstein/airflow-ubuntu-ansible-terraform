@@ -1,0 +1,68 @@
+- name: Provisioning for Airflow
+  hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+
+    - name: Create airflow folders
+      become: no
+      file:
+        path: "{{deploy_home}}/{{item}}"
+        state: directory
+      with_items:
+        - ""
+        - "dags"
+        - "db"
+
+    - name: Ensure supervisor is installed (for daemonizing docker-compose)
+      apt:
+        name: supervisor
+
+    - name: Write supervisor config for airflow
+      copy:
+        dest: /etc/supervisor/conf.d/airflow.conf
+        content: |
+          [program:airflow]
+          command=docker-compose -f {{deploy_home}}/docker-compose.yml up
+          directory={{deploy_home}}
+          autostart=true
+          autorestart=true
+          startretries=3
+          user={{deploy_user}}
+          environment=HOME={{deploy_home}}
+
+    - name: Write docker-compose config for airflow
+      become: no
+      copy:
+        dest: "{{deploy_home}}/docker-compose.yml"
+        content: |
+          version: '2'
+          services:
+            postgres:
+              image: {{docker_pg_image}}
+              environment:
+                  - POSTGRES_USER=airflow
+                  - POSTGRES_PASSWORD=airflow
+                  - POSTGRES_DB=airflow
+            webserver:
+              image: {{docker_airflow_image}}
+              restart: always
+              depends_on:
+                  - postgres
+              environment:
+                  - LOAD_EX=y
+                  - EXECUTOR=Local
+              volumes:
+                  - ./dags:/usr/local/airflow/dags
+              ports:
+                  - "8080:8080"
+              command: webserver
+
+    - name: Ensure docker images have been pulled
+      docker_image:
+        name: "{{item}}"
+      with_items:
+        - "{{docker_pg_image}}"
+        - "{{docker_airflow_image}}"
+
+    - include: tasks/supervisor-reload.yml
