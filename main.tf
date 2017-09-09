@@ -39,6 +39,15 @@ resource "aws_security_group_rule" "ssh" {
   security_group_id = "${aws_security_group.airflow.id}"
 }
 
+resource "aws_security_group_rule" "airflow-web" {
+  type            = "ingress"
+  from_port       = 8080
+  to_port         = 8080
+  protocol        = "tcp"
+  cidr_blocks     = ["0.0.0.0/0"]
+  security_group_id = "${aws_security_group.airflow.id}"
+}
+
 resource "aws_security_group" "airflow" {
   name = "airflow-sg${var.deployment_suffix}"
   description = "airflow${var.deployment_suffix} security groups"
