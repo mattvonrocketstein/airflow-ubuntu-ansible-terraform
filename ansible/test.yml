@@ -6,8 +6,8 @@
 # I'd also rather see this testing happen inside a real programming language
 # rather than a CM language just because integration/infrastructure tests
 # should outgrow the expressiveness of something like ansible pretty quickly.
-# Nevertheless.. testing things this way is not completely horrible, it can still
-# run from CI, and test cases can run in parallel if you were to disable
+# Nevertheless.. testing things this way is not completely horrible, it can
+# still run from CI, and test cases can run in parallel if you were to disable
 # fail-fast here and bump up the ansible concurrency.
 #
 - name: Infrastructure Testing Playbook
@@ -24,6 +24,6 @@
         url: "http://{{ansible_hostname}}:{{airflow_port}}/admin/"
         return_content: yes
       register: webpage
-    - name: Confirm http is actually airflow
+    - name: Confirm http is actually serving airflow
       fail:
       when: "'Airflow - DAGs' not in webpage.content"

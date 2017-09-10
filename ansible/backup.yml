@@ -1,0 +1,34 @@
+#
+# Command and control automation for backups.  One of the nice things about a
+# docker-compose based approach for postgres is that we don't pay for amazon RDS,
+# but of course we don't ge the backup snapshots either so we'll need automation
+# for that.  Oh well, we have to backup airflow anyway, so this is not really
+# much extra effort.
+#
+# What you see below is just a sketch, obviously you want to follow up by
+# compressing the directory and sending it to S3, and you also need symmetric
+# restore-from-backup functionality.
+#
+- name: Infrastructure Backup Playbook
+  hosts: all
+  become: yes
+  become_method: sudo
+  tasks:
+    # workaround for https://github.com/ansible/ansible-modules-core/issues/18
+    - name: Set correct ssh key path
+      set_fact:
+        ansible_ssh_private_key_file: "{{ ansible_ssh_private_key_file | realpath }}"
+    - name: Backup PG database
+      synchronize:
+        src: "{{deploy_home}}/db"
+        dest: backups
+        mode: pull
+        recursive: yes
+        delete: yes
+    - name: Backup Airflow DAGs
+      synchronize:
+        src: "{{airflow_dags_home}}"
+        dest: backups
+        mode: pull
+        recursive: yes
+        delete: yes

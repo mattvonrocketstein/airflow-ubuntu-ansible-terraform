@@ -6,3 +6,4 @@
 .terraform/
 airflow-key*
 *.retry
+ansible/backups/*

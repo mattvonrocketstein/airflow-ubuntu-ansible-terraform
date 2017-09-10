@@ -92,3 +92,6 @@ test:
 	 -e @ansible/vars.yml \
 	 -i `terraform output -json|jq -r ".ip.value"`, \
 	 ansible/test.yml
+
+# Command and control proxies
+backup: provision-backup
