@@ -1,0 +1,29 @@
+#
+# Ansible's official policy on testing seems to boil down to
+# "it's not necessary", but I have my doubts!  See also:
+# http://docs.ansible.com/ansible/latest/test_strategies.html#the-right-level-of-testing
+#
+# I'd also rather see this testing happen inside a real programming language
+# rather than a CM language just because integration/infrastructure tests
+# should outgrow the expressiveness of something like ansible pretty quickly.
+# Nevertheless.. testing things this way is not completely horrible, it can still
+# run from CI, and test cases can run in parallel if you were to disable
+# fail-fast here and bump up the ansible concurrency.
+#
+- name: Infrastructure Testing Playbook
+  hosts: all
+  become: yes
+  become_method: sudo
+  gather_facts: yes
+  tasks:
+    # grep will exit with 1 when no results found, thus failing the step
+    - name: Confirm airflow is running
+      shell: supervisorctl status|grep airflow|grep RUNNING
+    - name: Confirm http on port 8080
+      uri:
+        url: "http://{{ansible_hostname}}:{{airflow_port}}/admin/"
+        return_content: yes
+      register: webpage
+    - name: Confirm http is actually airflow
+      fail:
+      when: "'Airflow - DAGs' not in webpage.content"

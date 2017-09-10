@@ -2,3 +2,4 @@ deploy_user: ubuntu
 deploy_home: /home/{{deploy_user}}/airflow
 docker_pg_image: postgres:9.6
 docker_airflow_image: puckel/docker-airflow:1.8.2
+airflow_port: 8080

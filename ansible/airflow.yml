@@ -41,9 +41,11 @@
             postgres:
               image: {{docker_pg_image}}
               environment:
-                  - POSTGRES_USER=airflow
-                  - POSTGRES_PASSWORD=airflow
-                  - POSTGRES_DB=airflow
+                - POSTGRES_USER=airflow
+                - POSTGRES_PASSWORD=airflow
+                - POSTGRES_DB=airflow
+              volumes:
+                - ./db:/var/lib/postgresql/data
             webserver:
               image: {{docker_airflow_image}}
               restart: always
@@ -55,7 +57,7 @@
               volumes:
                   - ./dags:/usr/local/airflow/dags
               ports:
-                  - "8080:8080"
+                  - "{{airflow_port}}:8080"
               command: webserver
 
     - name: Ensure docker images have been pulled

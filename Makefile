@@ -50,6 +50,7 @@ apply: require-keypair assert-TF_VAR_aws_profile require-tf
 	terraform apply
 refresh: require-tf assert-TF_VAR_aws_profile
 	terraform refresh
+infrastructure: apply
 
 # Aliases, prerequisites and proxies for invoking `terraform destroy`
 # with the right environment.  This will show the plan and still ask
@@ -83,3 +84,11 @@ provision-%: require-jq require-tf require-ansible
 	 ansible/$*.yml
 provision:
 	make provision-main
+
+
+# Proxies for running infrastructure tests.
+test:
+	ansible-playbook \
+	 -e @ansible/vars.yml \
+	 -i `terraform output -json|jq -r ".ip.value"`, \
+	 ansible/test.yml

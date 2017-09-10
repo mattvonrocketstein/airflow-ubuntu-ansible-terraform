@@ -3,13 +3,21 @@
     <td colspan=2><strong>
       Airflow Deployment Demo
       </strong>&nbsp;&nbsp;&nbsp;&nbsp;
-    <a href=#12-usage>Usage</a> |
-    <a href=#2-design--technology-decisions>Design and Technology Decisions</a> |
+      <a href=#11-prerequisites>Prerequisites</a> |
+      <a href=#12-usage>Usage</a> |
+      <a href=#2-design--technology-decisions>
+        Design and Technology Decisions
+      </a> |
+      <a href=#3-assumptions-tradeoffs-room-for-improvement>
+        Assumptions and Tradeoffs
+      </a>
     </td>
   </tr>
   <tr>
     <td width=15%><img src=img/icon.png style="width:50px"></td>
-    <td>A demo for deploying [Airflow](https://airflow.incubator.apache.org/) on EC2/Ubuntu with docker-comose</td>
+    <td>
+      A demo for deploying <a href=https://airflow.incubator.apache.org/>Airflow</a> on EC2/Ubuntu with docker-comose.
+    </td>
   </tr>
 </table>
 
@@ -46,15 +54,17 @@ You can bootstrap the infrastructure with the commands you see below.  Provision
 
 1.2.1. **Create keys** with `make keypair`.
 
-1.2.2. **Create infrastructure** with `make infrastructure`
+1.2.2. (Optional) **Preview infrastructure plan** with `make plan`
 
-1.2.3. **Provision infrastructure** with `make provision`.  You can see the server IP address in this step, which you'll want to use later for checking out the airflow web UI.
+1.2.3. **Create infrastructure** with `make infrastructure`
 
-1.2.4. (Optional) **Test infrastructure** with `make test`.
+1.2.4. **Provision infrastructure** with `make provision`.  You can see the server IP address in this step, which you'll want to use later for checking out the airflow web UI.
 
-1.2.5. (Optional) **Inspect server** in place with `make ssh`
+1.2.5. (Optional) **Test infrastructure** with `make test`.
 
-1.2.6. **Teardown infrastructure** with `make teardown`.
+1.2.6. (Optional) **Inspect server** in place with `make ssh`
+
+1.2.7. **Teardown infrastructure** with `make teardown`.
 
 # 2. Design & Technology Decisions
 
@@ -106,8 +116,10 @@ This process is not bad, but there's lots of room for improvement.  A few things
 
 3.2. It's often better to deploy infrastructure from images (i.e. use [packer](https://www.packer.io/intro/index.html) to build an AMI).  We avoid truly immutable infrastructure here for simplicity's sake, because it would take our two stage process (build infrastructure, provision infrastructure) to at least a 4 stage process (build infrastructure, provision infrastructure, snapshot infrastructure to image, deploy image).
 
-3.3. For the reasons I've already covered, I try to avoid advanced features of ansible/terraform whenever possible until I know the good folks doing my code reviews are up to speed.
+3.3. For the reasons I've already covered, I try to avoid advanced features of ansible/terraform unless absolutely necessary and/or until I know the good folks doing my code reviews are up to speed.
 
 3.4. Despite the work that projects like [docker-airflow](https://github.com/puckel/docker-airflow) save us, they create new work too.  For real production usage, best practice would be to setup a private docker repository to guarantee image integrity, and to do a thorough code review/evaluation of images before using them.
 
 3.5. For simplicity, my deployments do *not* use VPCs or bastion hosts; obviously this is something that you probably always want in real life.
+
+3.6 This deployment does not ship with docker-in-docker capability, which could be very useful for the local executor to run with containerized workflows.
