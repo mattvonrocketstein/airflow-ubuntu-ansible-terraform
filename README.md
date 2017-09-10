@@ -1,8 +1,24 @@
+<table>
+  <tr>
+    <td colspan=2><strong>
+      Airflow Deployment Demo
+      </strong>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href=#12-usage>Usage</a> |
+    <a href=#2-design--technology-decisions>Design and Technology Decisions</a> |
+    </td>
+  </tr>
+  <tr>
+    <td width=15%><img src=img/icon.png style="width:50px"></td>
+    <td>A demo for deploying [Airflow](https://airflow.incubator.apache.org/) on EC2/Ubuntu with docker-comose</td>
+  </tr>
+</table>
+
 # 1. Running the Demo
+
 
 ## 1.1 Prerequisites
 
-1.1.1 Valid named AWS profiles should already be setup in your `~/.aws/credentials` file.  We'll assume in the rest of this guide that the profile you want to use is called `MY_PROFILE`.  The correct format for the entry is as follows:
+1.1.1 Valid named AWS profiles should already be setup in your `~/.aws/credentials` file.  We'll assume in the rest of this guide that the profile you want to use is called `MY_PROFILE`.  Make sure the name of the profile matches `TF_VAR_aws_profile` in the Makefile.  The correct format for this entry is as follows:
 
     [MY_PROFILE]
     aws_access_key_id=REDACTED

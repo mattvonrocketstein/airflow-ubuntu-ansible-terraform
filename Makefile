@@ -59,6 +59,7 @@ plan-destroy:
 	terraform plan -destroy
 destroy: plan-destroy
 	terraform destroy
+teardown: destroy
 
 # Helper for devs to SSH into the instance we're creating.
 # This is only for inspection/debugging, it's not used directly
