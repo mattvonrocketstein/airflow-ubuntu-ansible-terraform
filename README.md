@@ -86,12 +86,12 @@ In general though using docker-compose has several benefits:
 
 This process is not bad, but there's lots of room for improvement.  A few things that stand out:
 
-3.1. Due to the benefits of docker-compose I've already mentioned, we're currently hosting all the airflow components on one server.  This seems bad but is probably ok.. I'm not an expert on airflow, but as a workflow orchestration engine, I would expect that airflow itself should basically be doing book-keeping and would leave the truly hard stuff to separate worker hosts.
+3.1. Due to the benefits of docker-compose I've already mentioned, we're currently hosting all the airflow components on one server.  This might seem bad but is actually probably ok, especially for demonstration/evaluation purposes.  I'm not an expert on airflow, but as a workflow orchestration engine, I would expect that airflow itself should basically be doing book-keeping and would leave the truly hard stuff to separate worker hosts.
 
-3.2. It's really better to deploy infrastructure from images (i.e. use [packer](https://www.packer.io/intro/index.html) to build an AMI).  We avoid this for simplicity's sake, because it would take our two stage process (build infrastructure, provision infrastructure) to at least a 4 stage process (build infrastructure, provision infrastructure, snapshot infrastructure to image, deploy image).
+3.2. It's often better to deploy infrastructure from images (i.e. use [packer](https://www.packer.io/intro/index.html) to build an AMI).  We avoid truly immutable infrastructure here for simplicity's sake, because it would take our two stage process (build infrastructure, provision infrastructure) to at least a 4 stage process (build infrastructure, provision infrastructure, snapshot infrastructure to image, deploy image).
 
-3.3. For the reasons I've already covered, I've tried to avoid advanced features of ansible/terraform whenever possible until I know the good folks doing my code reviews are up to speed.
+3.3. For the reasons I've already covered, I try to avoid advanced features of ansible/terraform whenever possible until I know the good folks doing my code reviews are up to speed.
 
 3.4. Despite the work that projects like [docker-airflow](https://github.com/puckel/docker-airflow) save us, they create new work too.  For real production usage, best practice would be to setup a private docker repository to guarantee image integrity, and to do a thorough code review/evaluation of images before using them.
 
-3.5. For simplicity, my deployments do NOT use VPCs or bastion hosts; obviously this is something that you probably always want in real life.
+3.5. For simplicity, my deployments do *not* use VPCs or bastion hosts; obviously this is something that you probably always want in real life.
