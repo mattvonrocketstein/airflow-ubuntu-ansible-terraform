@@ -3,14 +3,14 @@
     <td colspan=2><strong>
       Airflow Deployment Demo
       </strong>&nbsp;&nbsp;&nbsp;&nbsp;
-      <a href=#11-prerequisites>Prerequisites</a> |
+      <small><a href=#11-prerequisites>Prerequisites</a> |
       <a href=#12-usage>Usage</a> |
       <a href=#2-design--technology-decisions>
         Design and Technology Decisions
       </a> |
       <a href=#3-assumptions-tradeoffs-room-for-improvement>
         Assumptions and Tradeoffs
-      </a>
+      </a></small>
     </td>
   </tr>
   <tr>
@@ -107,7 +107,7 @@ In general though using docker-compose has several benefits:
 
 2.5.3. Running complex integration tests entirely inside Jenkins (or whatever CI environment) becomes possible with no extra effort thanks to docker's sandboxing of i.e. networking and filesystems.  Suppose you want to upgrade the database version without the webserver or vice versa.  The utility of running such an integration suite on test branch instead of a whole test environment is hard to overstate!
 
-2.5.4. The format preserves fairly well our ability to pivot on deployment style at any point.  For example switching to kubernetes or ECS-based deployments should be easy.
+2.5.4. While documenting dependencies in a straightforward fashion, the format also preserves fairly well our ability to pivot on our deployment style at any point.  Other deployment strategies that come to mind: switching to Kubernetes or ECS-based deployments, replacing postgres/redis with RDS/Elasticache, splitting the postgres/redis/webserver components onto separate EC2 hosts.  
 
 # 3. Assumptions, Tradeoffs, Room for Improvement
 
