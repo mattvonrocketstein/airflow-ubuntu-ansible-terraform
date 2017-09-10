@@ -69,9 +69,16 @@ ssh:
 	 	-i ./airflow-key -l ubuntu \
 	 	`terraform output -json|jq -r ".ip.value"`
 
-# Helper for invoking ansible against the host created by terraform
+# Proxies for invoking ansible against the host created by terraform.
+# This make target is parametric, i.e. `make provision-docker` will
+# provision only with the playbook `ansible/docker.yml`, and
+# `make provision-airflow` will provision only with the playbook
+# `ansible/airflow.yml`.  To provision everything from scratch,
+# use `make provision-main` or simply `make provision`
 provision-%: require-jq require-tf require-ansible
 	ansible-playbook \
 	 -e @ansible/vars.yml \
 	 -i `terraform output -json|jq -r ".ip.value"`, \
 	 ansible/$*.yml
+provision:
+	make provision-main
