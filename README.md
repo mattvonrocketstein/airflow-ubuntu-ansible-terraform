@@ -16,13 +16,12 @@
   <tr>
     <td width=15%><img src=img/icon.png style="width:50px"></td>
     <td>
-      A demo for deploying <a href=https://airflow.incubator.apache.org/>Airflow</a> on EC2/Ubuntu with docker-comose.
+      A demo for deploying <a href=https://airflow.incubator.apache.org/>Airflow</a> (a workflow orchestration engine) on EC2/Ubuntu with ansible, terraform, and docker-compose.  This project relies heavily on the excellent <a href=https://github.com/puckel/docker-airflow>docker-airflow</a> project.  
     </td>
   </tr>
 </table>
 
 # 1. Running the Demo
-
 
 ## 1.1 Prerequisites
 
@@ -62,9 +61,11 @@ You can bootstrap the infrastructure with the commands you see below.  Provision
 
 1.2.5. (Optional) **Test infrastructure** with `make test`.
 
-1.2.6. (Optional) **Inspect server** in place with `make ssh`
+1.2.6. (Optional) **Inspect server** in place with `make ssh`.  From here you might want to, for instance, restart the server and run tests again to verify everything survives a reboot.
 
-1.2.7. **Teardown infrastructure** with `make teardown`.
+1.2.7. (Optional) **Test backups** from remote to local using `make backup`
+
+1.2.8. **Teardown infrastructure** with `make teardown`.
 
 # 2. Design & Technology Decisions
 
@@ -76,7 +77,7 @@ In particular I've avoided writing [ansible roles](https://www.digitalocean.com/
 
 ## 2.2 Makefile
 
-Makefile based automation is not my favorite thing, but in a world with Gulpfiles, Rakefiles, Fabfiles, and many other options for project automation, Makefile's feel like a lightweight and mostly dependency-free approach.  It's nice that any Jenkins instance or development environment already has `make`.  It also has the benefit that it doesn't commit itself to a Python/Ruby/JS preference, which in my experience polyglot development shops tend to appreciate.
+Makefile based automation is not my favorite thing, but in a world with Gulpfiles, Rakefiles, Fabfiles, and many other options for project automation, Makefile's feel like a lightweight and mostly dependency-free approach.  It's nice that any Jenkins instance or development environment already has `make`.  It also has the benefit that it doesn't commit itself to a Python/Ruby/JS preference, which polyglot development shops tend to appreciate.
 
 ## 2.3 Terraform
 
@@ -123,3 +124,7 @@ This process is not bad, but there's lots of room for improvement.  A few things
 3.5. For simplicity, my deployments do *not* use VPCs or bastion hosts; obviously this is something that you probably always want in real life.
 
 3.6 This deployment does not ship with docker-in-docker capability, which could be very useful for the local executor to run with containerized workflows.
+
+3.7 This deployment does not ship with celery flower / airflow scheduler capabilities, and thus does not seem to need Redis infrastructure.  Given the rest of the pattern that's already in place though, adding this stuff is almost trivial.  If this interests you see docker-airflow's [example file](https://github.com/puckel/docker-airflow/blob/master/docker-compose-CeleryExecutor.yml) and begin modifying the content of [ansible/airflow.yml](ansible/airflow.yml) to match.
+
+3.8 The project is missing any command-and-control automation for actually doing things with airflow, but apparently [Airflow's RESTful API is experimental anyway](https://airflow.incubator.apache.org/api.html#experimental-rest-api).
