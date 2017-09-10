@@ -14,18 +14,21 @@
   become: yes
   become_method: sudo
   tasks:
+
     # workaround for https://github.com/ansible/ansible-modules-core/issues/18
     - name: Set correct ssh key path
       set_fact:
         ansible_ssh_private_key_file: "{{ ansible_ssh_private_key_file | realpath }}"
-    - name: Backup PG database
+
+    - name: Backup PG database to local
       synchronize:
         src: "{{deploy_home}}/db"
         dest: backups
         mode: pull
         recursive: yes
         delete: yes
-    - name: Backup Airflow DAGs
+
+    - name: Backup Airflow DAGs to local
       synchronize:
         src: "{{airflow_dags_home}}"
         dest: backups

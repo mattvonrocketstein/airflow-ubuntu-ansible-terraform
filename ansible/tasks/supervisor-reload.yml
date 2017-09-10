@@ -1,18 +1,30 @@
+#
+# Standard boilerplate for interacting with supervisor.
+# There's a ansible module for doing this more natively,
+# but I'm opting for explicit here since I've had trouble
+# in the past with it on different platforms
+#
+
+# Make sure supervisor is set to survive host reboots
 - name: Enable supervisor
   service:
     name: supervisor
     enabled: yes
 
+# Start supervisor service
 - name: Start supervisor
   service:
     name: supervisor
     state: started
 
+# Reread config for subservices
 - name: Reread for supervisor
   shell: supervisorctl reread
 
+# Reload daemon config
 - name: Reload for supervisor
   shell: supervisorctl reload
 
+# Restart all subservices
 - name: Restart (all) for supervisor
   shell: sleep 2 && supervisorctl restart all

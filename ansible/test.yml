@@ -16,14 +16,17 @@
   become_method: sudo
   gather_facts: yes
   tasks:
+
     # grep will exit with 1 when no results found, thus failing the step
     - name: Confirm airflow is running
       shell: supervisorctl status|grep airflow|grep RUNNING
+
     - name: Confirm http on port 8080
       uri:
         url: "http://{{ansible_hostname}}:{{airflow_port}}/admin/"
         return_content: yes
       register: webpage
+
     - name: Confirm http is actually serving airflow
       fail:
       when: "'Airflow - DAGs' not in webpage.content"

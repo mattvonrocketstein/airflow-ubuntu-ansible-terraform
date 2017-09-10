@@ -1,4 +1,8 @@
-- name: Provisioning for Airflow
+#
+# The playbook for installing airflow.
+# This assumes the docker playbook has already run.
+#
+- name: Playbook for Airflow
   hosts: all
   become: yes
   become_method: sudo

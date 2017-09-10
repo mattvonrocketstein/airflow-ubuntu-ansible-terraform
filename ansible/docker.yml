@@ -1,4 +1,11 @@
-- name: Provisioning for Docker
+#
+# Playbook for installing docker and related tools.
+# There's obviously a ansible role out there somewhere for this, but
+# docker changes fast and particularly if you need to mess around with
+# nonstandard volume-drivers, etc, then roles can add extra opacity that
+# makes debugging more difficult.  Best to be explicit.
+#
+- name: Playbook for Docker
   hosts: all
   become: yes
   become_method: sudo
@@ -6,16 +13,23 @@
     - name: Check if docker is installed
       stat: path=/usr/bin/docker
       register: look_for_docker
+
+    # Conditional include that does most of the real installation work.
+    # This is mostly to accomplish idempotency, because some of the steps
+    # in the included task can have trouble with that.
     - name: Install docker if it's not already present
       include: tasks/docker.yml
       when: look_for_docker.stat.exists == False
+
     - name: Install pip
       apt:
         name: python-pip
         state: installed
+
     - name: Install docker-compose with pip
       pip:
-        name: docker-compose==1.15.0
+        name: docker-compose=={{docker_compose_version}}
+
     - name: Add deploy user to docker group
       user:
         name: "{{deploy_user}}"
