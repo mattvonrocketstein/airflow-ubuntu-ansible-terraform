@@ -7,12 +7,12 @@
     - name: Create airflow folders
       become: no
       file:
-        path: "{{deploy_home}}/{{item}}"
+        path: "{{item}}"
         state: directory
       with_items:
-        - ""
-        - "dags"
-        - "db"
+        - "{{deploy_home}}"
+        - "{{airflow_dags_home}}"
+        - "{{airflow_db_home}}"
 
     - name: Ensure supervisor is installed (for daemonizing docker-compose)
       apt:
@@ -45,7 +45,7 @@
                 - POSTGRES_PASSWORD=airflow
                 - POSTGRES_DB=airflow
               volumes:
-                - ./db:/var/lib/postgresql/data
+                - {{airflow_db_home}}:/var/lib/postgresql/data
             webserver:
               image: {{docker_airflow_image}}
               restart: always
@@ -55,7 +55,7 @@
                   - LOAD_EX=y
                   - EXECUTOR=Local
               volumes:
-                  - ./dags:/usr/local/airflow/dags
+                  - {{airflow_dags_home}}:/usr/local/airflow/dags
               ports:
                   - "{{airflow_port}}:8080"
               command: webserver
