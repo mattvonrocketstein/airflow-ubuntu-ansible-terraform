@@ -3,14 +3,14 @@
     <td colspan=2><strong>
       Airflow Deployment Demo
       </strong>&nbsp;&nbsp;&nbsp;&nbsp;
-      <small><small><a href=#11-prerequisites>Prerequisites</a> |
+      <font size=10px><a href=#11-prerequisites>Prerequisites</a> |
       <a href=#12-usage>Usage</a> |
       <a href=#2-design--technology-decisions>
-        Design and Technology Decisions
+        Design & Technology Decisions
       </a> |
       <a href=#3-assumptions-tradeoffs-room-for-improvement>
-        Assumptions and Tradeoffs
-      </a></small><small>
+        Assumptions & Tradeoffs
+      </a></font>
     </td>
   </tr>
   <tr>
