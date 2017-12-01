@@ -1,4 +1,4 @@
-TF_VAR_aws_profile := 605-test
+TF_VAR_aws_profile := MY_PROFILE
 TF_VAR_pub_key := $(shell cat ./airflow-key.pub)
 TF_VAR_aws_region := us-east-1
 TF_VAR_aws_az := us-east-1d
